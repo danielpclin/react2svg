@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.ExportSvgBtn{
+  margin-top: 50px;
+  color: #ddd;
+  font-size: 18px;
+  font-weight: bold;
+  display: inline-block;
+  width: 160px;
+  height: 40px;
+  border-style: none;
+  border-radius: 5px;
+  background-color: #606060;
+  cursor: pointer;
+  &:hover {
+    background-color: #707070;
+  }
+}
