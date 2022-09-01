@@ -1,26 +1,26 @@
 import React, {useRef} from 'react';
-import logo from './logo.svg';
-import './App.scss';
+import logo from '../assets/logo.svg';
 import { toSvg } from 'html-to-image';
-const download = require("downloadjs");
+import {download} from "../helpers";
+import './ReactDemo.scss';
 
 
-function App() {
-  const ref: React.MutableRefObject<HTMLElement|any> = useRef(null);
+function ReactDemo() {
+  const ref = useRef<HTMLDivElement>(null);
 
   const exportAsSvg = () => {
-    toSvg(ref.current)
+    toSvg(ref.current as HTMLElement)
         .then(function (dataUrl) {
-          download(dataUrl, 'my-node.png');
+          download(dataUrl, 'export.svg');
         });
   }
 
   return (
-    <div className="App">
-      <header className="App-header" ref={ref}>
+    <div className="react-demo" ref={ref}>
+      <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload. <br />
+          Edit <code>src/components/ReactDemo.tsx</code> and save to reload. <br />
           Press the button below to export page as svg.
         </p>
         <a
@@ -39,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default ReactDemo;

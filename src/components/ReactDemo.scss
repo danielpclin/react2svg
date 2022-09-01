@@ -1,5 +1,6 @@
-.App {
+.react-demo {
   text-align: center;
+  flex-grow: 1;
 }
 
 .App-logo {
@@ -37,8 +38,8 @@
   }
 }
 
-.ExportSvgBtn{
-  margin-top: 50px;
+.ExportSvgBtn {
+  margin-top: 30px;
   color: #ddd;
   font-size: 18px;
   font-weight: bold;

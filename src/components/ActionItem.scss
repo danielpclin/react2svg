@@ -1,0 +1,40 @@
+.action-item{
+  display: block;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &.active {
+    .action-label{
+      color: #fff;
+    }
+    .active-indicator::before {
+      color: #fff;
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-left-color: #ffffff;
+      border-left: 2px solid;
+    }
+  }
+}
+
+.action-label{
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  width: 48px;
+  height: 48px;
+  margin-right: 0;
+  box-sizing: border-box;
+  font-size: 24px;
+  align-items: center;
+  justify-content: center;
+
+  &:hover{
+    color: #fff;
+  }
+}
