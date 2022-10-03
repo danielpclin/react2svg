@@ -5,11 +5,8 @@ import "./ActionItem.scss"
 
 function ActionItem(props: ActionItemProps) {
 
-    const [{isDragging}, drag] = useDrag(() => ({
+    const [collectedProps, drag] = useDrag(() => ({
         type: DraggableTypes.ACTION,
-        collect: monitor => ({
-            isDragging: monitor.isDragging(),
-        }),
     }))
 
     const actionOnClick = () => {

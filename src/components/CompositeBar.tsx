@@ -1,27 +1,23 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 import "./CompositeBar.scss"
-import {useDrag, useDrop} from 'react-dnd'
 import ActionItem, {IActionItem} from "./ActionItem";
+import {useDrop} from "react-dnd";
 import {DraggableTypes} from "../constants";
 
 function CompositeBar(props: CompositeBarProps) {
 
-    const [, drop] = useDrop(
-        () => ({
-            accept: DraggableTypes.ACTION,
-            drop: () => {console.log()}
-        }),
-        [x, y]
-    )
+    const [collectedProps, drop] = useDrop({
+        accept: DraggableTypes.ACTION,
+    })
 
-    const actionActive = (action: string) => {
+    const actionActive = useCallback((action: string) => {
         return action === props.activeActionLabel;
-    }
+    }, [props.activeActionLabel])
 
     return (
         <div className="composite-bar">
-            <ul className="actions-container">
+            <ul className="actions-container" ref={drop}>
                 {props.actionLabels.map(actionItem =>
                     <ActionItem key={actionItem.action} actionItem={actionItem} active={actionActive(actionItem.action)}
                                 onclick={()=>props.actionOnclick(actionItem.action)}/>

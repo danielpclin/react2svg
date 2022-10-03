@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useCallback, useRef} from 'react';
 import logo from '../assets/logo.svg';
 import { toSvg } from 'html-to-image';
 import {download} from "../helpers";
@@ -8,12 +8,12 @@ import './ReactDemo.scss';
 function ReactDemo() {
   const ref = useRef<HTMLDivElement>(null);
 
-  const exportAsSvg = () => {
+  const exportAsSvg = useCallback(() => {
     toSvg(ref.current as HTMLElement)
         .then(function (dataUrl) {
           download(dataUrl, 'export.svg');
         });
-  }
+  }, [])
 
   return (
     <div className="react-demo" ref={ref}>
