@@ -1,4 +1,37 @@
-.joint-js{
-  height: 100%;
+.joint-js-panel{
+  position: relative;
+  display: flex;
   flex-grow: 1;
+  height: 100%;
+
+  .add-block{
+    position: absolute;
+    display: block;
+    background-color: #61dafb;
+    border: none;
+    padding: 5px;
+    bottom: 10px;
+    right: 310px;
+  }
+
+  .add-block2{
+    position: absolute;
+    display: block;
+    background-color: coral;
+    border: none;
+    padding: 5px;
+    bottom: 10px;
+    right: 400px;
+  }
+
+  .joint-js{
+     height: 100%;
+     flex-grow: 1;
+  }
+
+  .info{
+    width: 300px;
+    overflow: auto;
+  }
 }
+
