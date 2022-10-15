@@ -5,9 +5,8 @@ import "jointjs/css/layout.css"
 import "./JointJsComponent.scss"
 import { useSyncedStore } from "@syncedstore/react";
 import { store } from "../yjs-store"
-import {areSame, filterArray, observeDeep} from "@syncedstore/core";
-// @ts-ignore
-import isEqual from 'lodash.isequal';
+import {observeDeep} from "@syncedstore/core";
+import {isEqual} from 'lodash-es';
 
 
 function JointJsComponent(props: any) {
@@ -16,6 +15,7 @@ function JointJsComponent(props: any) {
     const [graph, setGraph] = useState<joint.dia.Graph|null>();
     const [paper, setPaper] = useState<joint.dia.Paper|null>();
     const [graphJson, setGraphJson] = useState({cells: []});
+    const highlighted = useRef<joint.dia.Cell.ID|null>(null);
     const state = useSyncedStore(store);
 
     const jointCallback = useCallback((ref: HTMLDivElement) => {
@@ -33,7 +33,7 @@ function JointJsComponent(props: any) {
             setJointRef(ref);
             setPaper(paper);
             setGraph(graph);
-            setGraphJson(graph.toJSON())
+            // setGraphJson(graph.toJSON())
             graph.fromJSON({cells: JSON.parse(JSON.stringify(state.cells))})
             graph.on('add', (cell)=>{
                 // setGraphJson(graph.toJSON());
@@ -48,9 +48,33 @@ function JointJsComponent(props: any) {
                 // console.log(graph.toJSON());
                 state.cells.splice(state.cells.findIndex(cell => cell.id === cellView.model.id), 1, graph.getCell(cellView.model.id).toJSON())
             })
+            paper.on('element:pointerclick', function (cellView) {
+                // console.log(cellView)
+                // if (cellView.model.attributes.type !== "standard.Rectangle")
+                //     return
+                if (highlighted.current){
+                    if (highlighted.current !== cellView.model.id){
+                        paper.findViewByModel(highlighted.current).unhighlight();
+                        cellView.highlight();
+                        highlighted.current = cellView.model.id;
+                    }
+                }else{
+                    cellView.highlight();
+                    highlighted.current = cellView.model.id;
+                }
+            });
+            paper.on('blank:pointerclick', ()=>{
+                if (highlighted.current){
+                    paper.findViewByModel(highlighted.current).unhighlight();
+                    highlighted.current = null;
+                }
+            })
+            // TODO calculate diff instead of creating new graph from json
             observeDeep(state.cells, () => {
                 if(!isEqual(graph.toJSON().cells, state.cells)){
                     graph.fromJSON({cells: JSON.parse(JSON.stringify(state.cells))})
+                    if (highlighted.current)
+                        paper.findViewByModel(highlighted.current).highlight();
                 }
             });
         }else{
@@ -118,14 +142,10 @@ function JointJsComponent(props: any) {
                         }
                     });
 
-                    let rect2 = rect.clone();
-                    rect2.translate(300, 0);
-                    rect2.attr('label/text', 'World!');
-
                     let link = new joint.shapes.standard.Link();
                     link.source(rect);
-                    link.target(rect2);
-                    state.cells.push(rect.toJSON(), rect2.toJSON(), link.toJSON())
+                    link.target({x: 500, y: 500});
+                    state.cells.push(rect.toJSON(), link.toJSON())
                 }
             }}>
                 Add block

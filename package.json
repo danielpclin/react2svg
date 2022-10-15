@@ -17,7 +17,7 @@
     "dayjs": "^1.11.5",
     "html-to-image": "^1.10.4",
     "jointjs": "^3.5.5",
-    "lodash.isequal": "^4.5.0",
+    "lodash-es": "^4.17.21",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -84,6 +84,7 @@
     "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "^0.0.13",
+    "@types/lodash-es": "^4.17.6",
     "babel-plugin-named-exports-order": "^0.0.2",
     "prop-types": "^15.8.1",
     "webpack": "^5.74.0"
