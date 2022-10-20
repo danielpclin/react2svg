@@ -11,12 +11,11 @@ import {isEqual} from 'lodash-es';
 
 function JointJsComponent(props: any) {
     const namespace = joint.shapes;
-    const [jointRef, setJointRef] = useState<HTMLDivElement|null>(null);
     const [graph, setGraph] = useState<joint.dia.Graph|null>();
     const [paper, setPaper] = useState<joint.dia.Paper|null>();
-    const [graphJson, setGraphJson] = useState({cells: []});
     const highlighted = useRef<joint.dia.Cell.ID|null>(null);
     const state = useSyncedStore(store);
+    const stateUnobserve = useRef<Function|null>(null);
 
     const jointCallback = useCallback((ref: HTMLDivElement) => {
         if (ref && state.cells){
@@ -30,10 +29,8 @@ function JointJsComponent(props: any) {
                 height: ref.offsetHeight,
                 cellViewNamespace: namespace,
             })
-            setJointRef(ref);
             setPaper(paper);
             setGraph(graph);
-            // setGraphJson(graph.toJSON())
             graph.fromJSON({cells: JSON.parse(JSON.stringify(state.cells))})
             graph.on('add', (cell)=>{
                 // setGraphJson(graph.toJSON());
@@ -46,21 +43,35 @@ function JointJsComponent(props: any) {
             paper.on('cell:pointerup', (cellView) => {
                 // setGraphJson(graph.toJSON());
                 // console.log(graph.toJSON());
+                // TODO don't update if no change to cell
                 state.cells.splice(state.cells.findIndex(cell => cell.id === cellView.model.id), 1, graph.getCell(cellView.model.id).toJSON())
             })
-            paper.on('element:pointerclick', function (cellView) {
+            // paper.on('element:pointerdown', (elementView)=>{
+            //     setTimeout(function(){
+            //         state.cells.forEach(cell =>{
+            //             if (cell.id === elementView.model.id){
+            //                 // graph.getCell(elementView.model.id).attr('body/fill', 'green')
+            //                 // @ts-ignore
+            //                 cell.attrs.body.fill = 'green';
+            //                 // cell.position.x = 1000;
+            //             }
+            //         })
+            //     },1000);
+            //
+            // })
+            paper.on('element:pointerclick', function (elementView) {
                 // console.log(cellView)
                 // if (cellView.model.attributes.type !== "standard.Rectangle")
                 //     return
                 if (highlighted.current){
-                    if (highlighted.current !== cellView.model.id){
+                    if (highlighted.current !== elementView.model.id){
                         paper.findViewByModel(highlighted.current).unhighlight();
-                        cellView.highlight();
-                        highlighted.current = cellView.model.id;
+                        elementView.highlight();
+                        highlighted.current = elementView.model.id;
                     }
                 }else{
-                    cellView.highlight();
-                    highlighted.current = cellView.model.id;
+                    elementView.highlight();
+                    highlighted.current = elementView.model.id;
                 }
             });
             paper.on('blank:pointerclick', ()=>{
@@ -70,7 +81,8 @@ function JointJsComponent(props: any) {
                 }
             })
             // TODO calculate diff instead of creating new graph from json
-            observeDeep(state.cells, () => {
+            stateUnobserve.current = observeDeep(state.cells, () => {
+                console.log("changed")
                 if(!isEqual(graph.toJSON().cells, state.cells)){
                     graph.fromJSON({cells: JSON.parse(JSON.stringify(state.cells))})
                     if (highlighted.current)
@@ -78,10 +90,10 @@ function JointJsComponent(props: any) {
                 }
             });
         }else{
-            setJointRef(null);
             setPaper(null);
             setGraph(null);
-            // setGraphJson({cells: []});
+            if (stateUnobserve.current)
+                stateUnobserve.current();
         }
     }, [namespace, state.cells])
 
@@ -90,9 +102,6 @@ function JointJsComponent(props: any) {
         <div className="joint-js-panel">
             <div className="joint-js" ref={jointCallback}/>
             <div className="info">
-                {/*<pre>*/}
-                {/*    {JSON.stringify(graphJson.cells, null, 2)}*/}
-                {/*</pre>*/}
                 <pre>
                     Count: {state.cells.length}
                 </pre>
